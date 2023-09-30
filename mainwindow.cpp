@@ -264,11 +264,16 @@ void MainWindow::on_btnRecord_clicked(bool checked)
         record_end_msec = ui->timeVideoEnd->time().msecsSinceStartOfDay();
 
         QSize size = m_videoCapture->getCurrentSize();
-        m_videoProsessing->startRecord(
+        bool result = m_videoProsessing->startRecord(
                     ui->lineVideoOutPath->text(),
                     cv::Size(size.width(), size.height()),
                     m_videoCapture->getVideoFps());
 
+        if(!result)
+        {
+            ui->btnRecord->setChecked(false);
+            return;
+        }
         if(!m_videoCapture->isRunning())
         {
             on_btnVideoPlay_clicked();

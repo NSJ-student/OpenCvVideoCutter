@@ -7,7 +7,7 @@
 #if defined(Q_OS_LINUX)
 #define CAPTURE_PATH                QDir::homePath() + "/FIRMWARE_TEST/"
 #define RECORD_PATH                 QDir::homePath() + "/FIRMWARE_TEST/"
-#define VIDEO_FORMAT                cv::VideoWriter::fourcc('H','2','6','4')
+#define VIDEO_FORMAT                cv::VideoWriter::fourcc('X','2','6','4')
 #define VIDEO_EXT                   ".mp4"
 #else
 #define CAPTURE_PATH                "D:/FIRMWARE_TEST/"
@@ -110,13 +110,17 @@ bool CameraProcessing::startRecord(QString path, cv::Size size, int fps)
     m_recordFps = fps;
     b_recordErrorDetected = false;
 #if defined(Q_OS_LINUX)
-    QString gst_out = QString("appsrc ! videoconvert ! "
-                        "x264enc ! "
-                        "appsink location=\"%1\"").arg(path);
+    QString gst_out = QString("appsrc ! "
+                              "video/x-raw,format=BGR ! "
+                              "queue ! "
+                              "videoconvert ! "
+                              "x264enc ! "
+                            "filesink location=%1").arg(path);
 
+    qDebug() << gst_out;
     m_videoWriter = new cv::VideoWriter(gst_out.toStdString(),
                                     cv::CAP_GSTREAMER,
-                                    0,
+                                    VIDEO_FORMAT,
                                     m_recordFps,
                                     m_recordSize);
 #else
@@ -135,8 +139,9 @@ bool CameraProcessing::startRecord(QString path, cv::Size size, int fps)
         m_videoWriter->release();
         delete m_videoWriter;
         m_videoWriter = Q_NULLPTR;
+        b_recordEnable = false;
     }
-    return true;
+    return b_recordEnable;
 }
 
 bool CameraProcessing::startRecord(cv::Size size, int fps)
@@ -217,6 +222,7 @@ void CameraProcessing::doCapture(CameraCaptureInput * obj)
 void CameraProcessing::run()
 {
     int queue_count = -1;
+    int count = 0;
     while(b_cameraWorking)
     {
         CameraCaptureInput * input;
@@ -266,6 +272,18 @@ void CameraProcessing::run()
                 m_recordTime.restart();
                 m_videoWriter->write(input->cameraInput);
                 emit recordTime(m_recordTime.elapsed());
+                qDebug() << "write" << count;
+                count++;
+            }
+        }
+        else
+        {
+            if(m_videoWriter)
+            {
+                m_videoWriter->release();
+                delete m_videoWriter;
+                m_videoWriter = Q_NULLPTR;
+                qDebug() << "release record";
             }
         }
 
