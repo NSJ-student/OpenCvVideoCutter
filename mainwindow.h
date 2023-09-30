@@ -38,6 +38,12 @@ private slots:
 
     void on_btnRecord_clicked(bool checked);
 
+    void on_gbVideoPlay_clicked(bool checked);
+
+    void on_gbVideoRecord_clicked(bool checked);
+
+    void on_btnClearScene_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene m_scene;

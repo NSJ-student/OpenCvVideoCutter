@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QStyle>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -10,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_pixmapItem = Q_NULLPTR;
     ui->graphicsView->setScene(&m_scene);
+    ui->btnClearScene->setIcon(this->style()->standardIcon(
+                                   QStyle::SP_TrashIcon));
 
     m_videoCapture = new OpenCvVideo(this);
     connect(m_videoCapture, SIGNAL(videoFinished()),
@@ -94,15 +97,16 @@ void MainWindow::videoTimer()
 
     int frame_count = m_videoCapture->getCurrentVideoCount();
     int total_frame_count = m_videoCapture->getVideoFrameCount();
-    ui->sliderVideoInput->setValue(frame_count);
 
-    int duration = m_videoCapture->getCurrentVideoTime();
-    int hour = (duration/60/60)%24;
-    int minute = (duration/60)%60;
-    int second = (duration)%60;
+    int duration_msec = m_videoCapture->getCurrentVideoTime();
+    int hour = (duration_msec/1000/60/60)%24;
+    int minute = (duration_msec/1000/60)%60;
+    int second = (duration_msec/1000)%60;
 
+    ui->sliderVideoInput->setValue(duration_msec);
     ui->lblVideoTime->setText(QString("%1:%2:%3")
                        .arg(hour).arg(minute).arg(second));
+
 
     if(!ui->btnRecord->isChecked())
     {
@@ -114,8 +118,7 @@ void MainWindow::videoTimer()
         return;
     }
 
-    int duration_msec = duration*1000;
-
+    ui->progRecord->setValue(duration_msec-record_start_msec);
     if((record_start_msec<=duration_msec) &&
             (duration_msec<=record_end_msec))
     {
@@ -126,15 +129,13 @@ void MainWindow::videoTimer()
     {
         if(m_videoProsessing->isRecording())
         {
-            m_videoProsessing->stopRecord();
-            qDebug() << "stop recording";
+            on_btnRecord_clicked(false);
         }
     }
 
     if(total_frame_count <= frame_count)
     {
-        on_btnVideoStop_clicked();
-        return;
+        on_btnRecord_clicked(false);
     }
 }
 
@@ -158,17 +159,12 @@ void MainWindow::on_btnSelectVideoSource_clicked()
         ui->frameVideoWork->setEnabled(true);
         if(m_videoCapture->setVideo(path))
         {
-            ui->btnVideoPlay->setEnabled(true);
-            ui->btnVideoStop->setEnabled(true);
-
-            int frame_count = m_videoCapture->getVideoFrameCount();
-            ui->sliderVideoInput->setMaximum(frame_count);
-
             int duration = m_videoCapture->getVideoDuration();
             int hour = (duration/60/60)%24;
             int minute = (duration/60)%60;
             int second = (duration)%60;
 
+            ui->sliderVideoInput->setMaximum(duration*1000);
             ui->lblVideoTime->setText("00:00:00");
             ui->lblVideoTotal->setText(QString("%1:%2:%3")
                                .arg(hour).arg(minute).arg(second));
@@ -220,9 +216,11 @@ void MainWindow::on_btnVideoPlay_clicked()
         return;
     }
 
+    m_videoCapture->setCurrentVideoTime(0);
     if(m_videoCapture->startVideo())
     {
         ui->btnVideoPlay->setEnabled(false);
+        ui->gbVideoRecord->setEnabled(false);
         int interval = m_videoCapture->getVideoIntervalMs();
         if(interval > 0)
         {
@@ -240,6 +238,7 @@ void MainWindow::on_btnVideoPlay_clicked()
 void MainWindow::on_btnVideoStop_clicked()
 {
     ui->btnVideoPlay->setEnabled(true);
+    ui->gbVideoRecord->setEnabled(true);
     m_videoTimer.stop();
     m_videoCapture->stopVideo(1000);
     m_videoProsessing->stopRecord();
@@ -254,14 +253,18 @@ void MainWindow::on_btnRecord_clicked(bool checked)
         return;
     }
 
+    ui->btnRecord->setChecked(checked);
     ui->timeVideoStart->setEnabled(!checked);
     ui->timeVideoEnd->setEnabled(!checked);
     ui->btnSaveVideoPath->setEnabled(!checked);
+    ui->gbVideoPlay->setEnabled(!checked);
 
     if(checked)
     {
         record_start_msec = ui->timeVideoStart->time().msecsSinceStartOfDay();
         record_end_msec = ui->timeVideoEnd->time().msecsSinceStartOfDay();
+        ui->progRecord->setMaximum(record_end_msec-record_start_msec);
+        ui->progRecord->setValue(0);
 
         QSize size = m_videoCapture->getCurrentSize();
         bool result = m_videoProsessing->startRecord(
@@ -272,16 +275,67 @@ void MainWindow::on_btnRecord_clicked(bool checked)
         if(!result)
         {
             ui->btnRecord->setChecked(false);
+            qDebug() << "fail to start record";
             return;
         }
-        if(!m_videoCapture->isRunning())
+
+        m_videoCapture->setCurrentVideoTime(record_start_msec);
+        if(m_videoCapture->startVideo())
         {
-            on_btnVideoPlay_clicked();
+            ui->btnVideoPlay->setEnabled(false);
+            int interval = m_videoCapture->getVideoIntervalMs();
+            if(interval > 0)
+            {
+#if (DEBUG_PRINT==1)
+                qDebug() << "start" << interval << path;
+#endif
+                m_videoTimer.setSingleShot(false);
+                m_videoTimer.setInterval(interval);
+                QTimer::singleShot(interval, &m_videoTimer, SLOT(start()));
+            }
         }
     }
     else
     {
+        m_videoTimer.stop();
+        m_videoCapture->stopVideo(1000);
         m_videoProsessing->stopRecord();
     }
+}
+
+
+void MainWindow::on_gbVideoPlay_clicked(bool checked)
+{
+    if(checked)
+    {
+        ui->gbVideoRecord->setChecked(false);
+    }
+    else
+    {
+        if(!ui->btnVideoPlay->isEnabled())
+        {
+            ui->gbVideoPlay->setChecked(true);
+        }
+    }
+}
+
+
+void MainWindow::on_gbVideoRecord_clicked(bool checked)
+{
+    if(checked)
+    {
+        ui->gbVideoPlay->setChecked(false);
+    }
+}
+
+
+void MainWindow::on_btnClearScene_clicked()
+{
+    if(m_pixmapItem)
+    {
+        delete m_pixmapItem;
+        m_pixmapItem = Q_NULLPTR;
+    }
+    m_scene.setSceneRect(QRectF());
 }
 

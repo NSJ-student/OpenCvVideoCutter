@@ -68,7 +68,7 @@ bool OpenCvVideo::startVideo()
 
     b_videoPause = false;
     b_videoWorking = true;
-    m_currentFrameCount = 0;
+    m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     this->start();
     return true;
 }
@@ -107,7 +107,7 @@ bool OpenCvVideo::startVideo(const QString &path)
 
     b_videoPause = false;
     b_videoWorking = true;
-    m_currentFrameCount = 0;
+    m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     this->start();
     return true;
 }
@@ -192,8 +192,8 @@ double OpenCvVideo::getVideoFps()
     }
     else
     {
-        double fps = m_videoCapture.get(cv::CAP_PROP_FPS);
-        return fps;
+        m_currentFps = m_videoCapture.get(cv::CAP_PROP_FPS);
+        return m_currentFps;
     }
 }
 
@@ -206,8 +206,8 @@ int OpenCvVideo::getVideoDuration()
     else
     {
         m_currentFps = m_videoCapture.get(cv::CAP_PROP_FPS);
-        int frame_count = m_videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
-        return ((double)frame_count/m_currentFps);
+        m_totalFrameCount = m_videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
+        return ((double)m_totalFrameCount/m_currentFps);
     }
 }
 
@@ -218,14 +218,19 @@ int OpenCvVideo::getCurrentVideoCount()
 
 int OpenCvVideo::getCurrentVideoTime()
 {
+    return ((double)m_currentFrameCount*1000/m_currentFps);
+}
+
+void OpenCvVideo::setCurrentVideoTime(int current_msec)
+{
     if(!m_videoCapture.isOpened())
     {
-        return ((double)m_currentFrameCount/m_currentFps);
+        return;
     }
     else
     {
-        double fps = m_videoCapture.get(cv::CAP_PROP_FPS);
-        return ((double)m_currentFrameCount/fps);
+        m_videoCapture.set(cv::CAP_PROP_POS_MSEC, current_msec);
+        m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     }
 }
 
@@ -278,5 +283,5 @@ void OpenCvVideo::run()
         }
     }
 
-    m_videoCapture.release();
+//    m_videoCapture.release();
 }

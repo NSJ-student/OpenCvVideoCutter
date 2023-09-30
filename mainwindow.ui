@@ -62,16 +62,9 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QCheckBox" name="cbShowVideo">
-         <property name="text">
-          <string>Show Video</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGraphicsView" name="graphicsView"/>
-       </item>
+       <property name="spacing">
+        <number>15</number>
+       </property>
        <item>
         <widget class="QFrame" name="frame">
          <property name="frameShape">
@@ -84,14 +77,55 @@
           <property name="leftMargin">
            <number>0</number>
           </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QToolButton" name="btnVideoPlay">
-            <property name="enabled">
-             <bool>false</bool>
+           <widget class="QCheckBox" name="cbShowVideo">
+            <property name="text">
+             <string>Show Video</string>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="btnClearScene">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGraphicsView" name="graphicsView"/>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="gbVideoPlay">
+         <property name="title">
+          <string>Video Play</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QToolButton" name="btnVideoPlay">
             <property name="text">
              <string>...</string>
             </property>
@@ -107,11 +141,8 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="1">
            <widget class="QToolButton" name="btnVideoStop">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
             <property name="text">
              <string>...</string>
             </property>
@@ -127,7 +158,7 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="2">
            <widget class="QSlider" name="sliderVideoInput">
             <property name="tracking">
              <bool>false</bool>
@@ -137,21 +168,21 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="3">
            <widget class="QLabel" name="lblVideoTime">
             <property name="text">
              <string>00:00:00</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="4">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>/</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="5">
            <widget class="QLabel" name="lblVideoTotal">
             <property name="text">
              <string>00:00:00</string>
@@ -162,12 +193,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+        <widget class="QGroupBox" name="gbVideoRecord">
+         <property name="title">
+          <string>Video Record</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <property name="leftMargin">
@@ -176,32 +210,6 @@
           <property name="rightMargin">
            <number>9</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Video Output</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QPushButton" name="btnRecord">
-            <property name="text">
-             <string>RECORD</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QTimeEdit" name="timeVideoStart"/>
-          </item>
           <item row="0" column="4">
            <widget class="QPushButton" name="btnSaveVideoPath">
             <property name="text">
@@ -209,13 +217,26 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QTimeEdit" name="timeVideoEnd"/>
-          </item>
           <item row="0" column="1" colspan="3">
            <widget class="QLineEdit" name="lineVideoOutPath">
             <property name="readOnly">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QTimeEdit" name="timeVideoStart"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Record Range</string>
             </property>
            </widget>
           </item>
@@ -232,8 +253,18 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_5">
+          <item row="1" column="4">
+           <widget class="QPushButton" name="btnRecord">
+            <property name="text">
+             <string>RECORD</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -241,7 +272,30 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Record Range</string>
+             <string>Record Path</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QTimeEdit" name="timeVideoEnd"/>
+          </item>
+          <item row="2" column="1" colspan="4">
+           <widget class="QProgressBar" name="progRecord">
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Progress</string>
             </property>
            </widget>
           </item>

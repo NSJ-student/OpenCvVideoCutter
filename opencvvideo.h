@@ -55,6 +55,8 @@ public:
     int getCurrentVideoCount();
     int getCurrentVideoTime();
 
+    void setCurrentVideoTime(int current_sec);
+
 Q_SIGNALS:
     void videoFinished();
     void drawMessage(const QString & message);
