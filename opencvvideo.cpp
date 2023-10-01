@@ -234,6 +234,29 @@ void OpenCvVideo::setCurrentVideoTime(int current_msec)
     }
 }
 
+void OpenCvVideo::forceCurrentVideoTime(int current_msec)
+{
+    if(!m_videoCapture.isOpened())
+    {
+        return;
+    }
+    if(this->isRunning())
+    {
+        b_videoPause = true;
+        m_frameMutex.lock();
+        if(m_frameQueue.count() > 0)
+        {
+            m_frameQueue.clear();
+            m_currentFrameCount = 0;
+        }
+        m_frameMutex.unlock();
+    }
+
+    m_videoCapture.set(cv::CAP_PROP_POS_MSEC, current_msec);
+    m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
+    b_videoPause = false;
+}
+
 void OpenCvVideo::run()
 {
     if(!m_videoCapture.isOpened())

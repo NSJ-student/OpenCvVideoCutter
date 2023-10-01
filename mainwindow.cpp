@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    b_slider_pressed = false;
     m_pixmapItem = Q_NULLPTR;
     ui->graphicsView->setScene(&m_scene);
     ui->btnClearScene->setIcon(this->style()->standardIcon(
@@ -103,7 +104,10 @@ void MainWindow::videoTimer()
     int minute = (duration_msec/1000/60)%60;
     int second = (duration_msec/1000)%60;
 
-    ui->sliderVideoInput->setValue(duration_msec);
+    if(!b_slider_pressed)
+    {
+        ui->sliderVideoInput->setValue(duration_msec);
+    }
     ui->lblVideoTime->setText(QString("%1:%2:%3")
                        .arg(hour).arg(minute).arg(second));
 
@@ -202,9 +206,15 @@ void MainWindow::on_btnSaveVideoPath_clicked()
 }
 
 
-void MainWindow::on_sliderVideoInput_sliderMoved(int position)
+void MainWindow::on_sliderVideoInput_sliderPressed()
 {
+    b_slider_pressed = true;
+}
 
+void MainWindow::on_sliderVideoInput_sliderReleased()
+{
+    m_videoCapture->forceCurrentVideoTime(ui->sliderVideoInput->value());
+    b_slider_pressed = false;
 }
 
 
@@ -220,7 +230,7 @@ void MainWindow::on_btnVideoPlay_clicked()
     if(m_videoCapture->startVideo())
     {
         ui->btnVideoPlay->setEnabled(false);
-        ui->gbVideoRecord->setEnabled(false);
+        ui->tabControl->setTabEnabled(1, false);
         int interval = m_videoCapture->getVideoIntervalMs();
         if(interval > 0)
         {
@@ -238,7 +248,7 @@ void MainWindow::on_btnVideoPlay_clicked()
 void MainWindow::on_btnVideoStop_clicked()
 {
     ui->btnVideoPlay->setEnabled(true);
-    ui->gbVideoRecord->setEnabled(true);
+    ui->tabControl->setTabEnabled(1, true);
     m_videoTimer.stop();
     m_videoCapture->stopVideo(1000);
     m_videoProsessing->stopRecord();
@@ -257,7 +267,7 @@ void MainWindow::on_btnRecord_clicked(bool checked)
     ui->timeVideoStart->setEnabled(!checked);
     ui->timeVideoEnd->setEnabled(!checked);
     ui->btnSaveVideoPath->setEnabled(!checked);
-    ui->gbVideoPlay->setEnabled(!checked);
+    ui->tabControl->setTabEnabled(0, !checked);
 
     if(checked)
     {
@@ -304,31 +314,6 @@ void MainWindow::on_btnRecord_clicked(bool checked)
 }
 
 
-void MainWindow::on_gbVideoPlay_clicked(bool checked)
-{
-    if(checked)
-    {
-        ui->gbVideoRecord->setChecked(false);
-    }
-    else
-    {
-        if(!ui->btnVideoPlay->isEnabled())
-        {
-            ui->gbVideoPlay->setChecked(true);
-        }
-    }
-}
-
-
-void MainWindow::on_gbVideoRecord_clicked(bool checked)
-{
-    if(checked)
-    {
-        ui->gbVideoPlay->setChecked(false);
-    }
-}
-
-
 void MainWindow::on_btnClearScene_clicked()
 {
     if(m_pixmapItem)
@@ -338,4 +323,5 @@ void MainWindow::on_btnClearScene_clicked()
     }
     m_scene.setSceneRect(QRectF());
 }
+
 

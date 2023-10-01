@@ -55,7 +55,8 @@ public:
     int getCurrentVideoCount();
     int getCurrentVideoTime();
 
-    void setCurrentVideoTime(int current_sec);
+    void setCurrentVideoTime(int current_msec);
+    void forceCurrentVideoTime(int current_msec);
 
 Q_SIGNALS:
     void videoFinished();

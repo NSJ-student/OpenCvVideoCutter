@@ -30,19 +30,17 @@ private slots:
 
     void on_btnSaveVideoPath_clicked();
 
-    void on_sliderVideoInput_sliderMoved(int position);
-
     void on_btnVideoPlay_clicked();
 
     void on_btnVideoStop_clicked();
 
     void on_btnRecord_clicked(bool checked);
 
-    void on_gbVideoPlay_clicked(bool checked);
-
-    void on_gbVideoRecord_clicked(bool checked);
-
     void on_btnClearScene_clicked();
+
+    void on_sliderVideoInput_sliderReleased();
+
+    void on_sliderVideoInput_sliderPressed();
 
 private:
     Ui::MainWindow *ui;
@@ -53,5 +51,6 @@ private:
     CameraProcessing * m_videoProsessing;
     int record_start_msec;
     int record_end_msec;
+    bool b_slider_pressed;
 };
 #endif // MAINWINDOW_H
