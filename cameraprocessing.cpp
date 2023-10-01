@@ -7,7 +7,8 @@
 #if defined(Q_OS_LINUX)
 #define CAPTURE_PATH                QDir::homePath() + "/FIRMWARE_TEST/"
 #define RECORD_PATH                 QDir::homePath() + "/FIRMWARE_TEST/"
-#define VIDEO_FORMAT                cv::VideoWriter::fourcc('X','2','6','4')
+//#define VIDEO_FORMAT                cv::VideoWriter::fourcc('X','2','6','4')
+#define VIDEO_FORMAT                cv::VideoWriter::fourcc('D','I','V','X')
 #define VIDEO_EXT                   ".mp4"
 #else
 #define CAPTURE_PATH                "D:/FIRMWARE_TEST/"
@@ -115,6 +116,7 @@ bool CameraProcessing::startRecord(QString path, cv::Size size, int fps)
                               "queue ! "
                               "videoconvert ! "
                               "x264enc ! "
+                              "mpegtsmux ! "
                             "filesink location=%1").arg(path);
 
     qDebug() << gst_out;
@@ -272,7 +274,6 @@ void CameraProcessing::run()
                 m_recordTime.restart();
                 m_videoWriter->write(input->cameraInput);
                 emit recordTime(m_recordTime.elapsed());
-                qDebug() << "write" << count;
                 count++;
             }
         }

@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_videoCapture = new OpenCvVideo(this);
     connect(m_videoCapture, SIGNAL(videoFinished()),
-            this, SIGNAL(videoEnd()));
+            this, SLOT(videoEnd()));
 
     connect(&m_videoTimer, SIGNAL(timeout()),
             this, SLOT(videoTimer()));
@@ -39,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
     time->setButtonSymbols(QTimeEdit::NoButtons);
 
     m_videoProsessing = new CameraProcessing(this);
+    connect(m_videoProsessing, SIGNAL(recordTime(int)),
+            this, SLOT(recordTime(int)));
     m_videoProsessing->startProcessing();
 }
 
@@ -57,6 +59,8 @@ void MainWindow::videoTimer()
         return;
     }
 
+    QTime debug;
+    debug.start();
     cv::Mat output = m_videoCapture->getCapturedFrame();
     if(output.empty())
     {
@@ -114,6 +118,7 @@ void MainWindow::videoTimer()
 
     if(!ui->btnRecord->isChecked())
     {
+        ui->lblProcessTimeMs->setText(QString::number(debug.elapsed()));
         if(total_frame_count <= frame_count)
         {
             on_btnVideoStop_clicked();
@@ -126,7 +131,9 @@ void MainWindow::videoTimer()
     if((record_start_msec<=duration_msec) &&
             (duration_msec<=record_end_msec))
     {
+#if (DEBUG_PRINT==1)
         qDebug() << "recording" << duration_msec << record_end_msec;
+#endif
         m_videoProsessing->setRecordFrame(true, output);
     }
     else if(duration_msec>record_end_msec)
@@ -141,11 +148,18 @@ void MainWindow::videoTimer()
     {
         on_btnRecord_clicked(false);
     }
+
+    ui->lblProcessTimeMs->setText(QString::number(debug.elapsed()));
 }
 
 void MainWindow::videoEnd()
 {
     on_btnVideoStop_clicked();
+}
+
+void MainWindow::recordTime(int time)
+{
+    ui->lblRecordTimeMs->setText(QString::number(time));
 }
 
 
@@ -164,11 +178,11 @@ void MainWindow::on_btnSelectVideoSource_clicked()
         if(m_videoCapture->setVideo(path))
         {
             int duration = m_videoCapture->getVideoDuration();
-            int hour = (duration/60/60)%24;
-            int minute = (duration/60)%60;
-            int second = (duration)%60;
+            int hour = (duration/1000/60/60)%24;
+            int minute = (duration/1000/60)%60;
+            int second = (duration/1000)%60;
 
-            ui->sliderVideoInput->setMaximum(duration*1000);
+            ui->sliderVideoInput->setMaximum(duration);
             ui->lblVideoTime->setText("00:00:00");
             ui->lblVideoTotal->setText(QString("%1:%2:%3")
                                .arg(hour).arg(minute).arg(second));
@@ -292,7 +306,6 @@ void MainWindow::on_btnRecord_clicked(bool checked)
         m_videoCapture->setCurrentVideoTime(record_start_msec);
         if(m_videoCapture->startVideo())
         {
-            ui->btnVideoPlay->setEnabled(false);
             int interval = m_videoCapture->getVideoIntervalMs();
             if(interval > 0)
             {
@@ -307,6 +320,7 @@ void MainWindow::on_btnRecord_clicked(bool checked)
     }
     else
     {
+        ui->progRecord->setValue(ui->progRecord->maximum());
         m_videoTimer.stop();
         m_videoCapture->stopVideo(1000);
         m_videoProsessing->stopRecord();

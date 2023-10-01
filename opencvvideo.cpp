@@ -26,7 +26,7 @@ bool OpenCvVideo::setVideo(const QString &path)
         b_videoWorking = false;
         if(!wait(1000))
         {
-            emit drawMessage("prev video close fail");
+            qDebug("prev video close fail");
             return false;
         }
     }
@@ -39,7 +39,7 @@ bool OpenCvVideo::setVideo(const QString &path)
     m_videoCapture = cv::VideoCapture(path.toStdString());
     if(!m_videoCapture.isOpened())
     {
-        emit drawMessage("video open fail");
+        qDebug("video open fail");
         return false;
     }
 
@@ -101,7 +101,7 @@ bool OpenCvVideo::startVideo(const QString &path)
     m_videoCapture = cv::VideoCapture(path.toStdString());
     if(!m_videoCapture.isOpened())
     {
-        emit drawMessage("video open fail");
+        qDebug("video open fail");
         return false;
     }
 
@@ -201,13 +201,13 @@ int OpenCvVideo::getVideoDuration()
 {
     if(!m_videoCapture.isOpened())
     {
-        return ((double)m_currentFrameCount/m_currentFps);
+        return ((double)m_currentFrameCount*1000/m_currentFps);
     }
     else
     {
         m_currentFps = m_videoCapture.get(cv::CAP_PROP_FPS);
         m_totalFrameCount = m_videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
-        return ((double)m_totalFrameCount/m_currentFps);
+        return ((double)m_totalFrameCount*1000/m_currentFps);
     }
 }
 

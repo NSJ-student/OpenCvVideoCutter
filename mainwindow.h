@@ -24,6 +24,7 @@ public:
 public slots:
     void videoTimer();
     void videoEnd();
+    void recordTime(int time);
 
 private slots:
     void on_btnSelectVideoSource_clicked();
