@@ -201,7 +201,7 @@ int OpenCvVideo::getVideoDuration()
 {
     if(!m_videoCapture.isOpened())
     {
-        return ((double)m_currentFrameCount*1000/m_currentFps);
+        return ((double)m_totalFrameCount*1000/m_currentFps);
     }
     else
     {
