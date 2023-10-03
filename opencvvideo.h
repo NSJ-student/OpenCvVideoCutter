@@ -14,8 +14,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 
-#define CAPTURE_FREQ_HZ       100
-
 class OpenCvVideo : public QThread
 {
     Q_OBJECT
