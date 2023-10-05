@@ -7,6 +7,7 @@
 #include <QThread>
 #include <QQueue>
 #include <QMutex>
+#include <QDebug>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio/videoio.hpp>
@@ -69,6 +70,7 @@ private:
     cv::VideoCapture m_videoCapture;
     QQueue<cv::Mat> m_frameQueue;
     QMutex m_frameMutex;
+    QString m_currentVideoPath;
     bool m_cameraAvailable;
     bool b_videoWorking;
     bool b_videoPause;

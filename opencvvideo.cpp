@@ -1,6 +1,5 @@
 #include "opencvvideo.h"
 
-
 OpenCvVideo::OpenCvVideo(QObject *parent) :
     QThread(parent)
   , b_videoWorking(false)
@@ -43,6 +42,7 @@ bool OpenCvVideo::setVideo(const QString &path)
         return false;
     }
 
+    m_currentVideoPath = path;
     return true;
 }
 
@@ -105,6 +105,7 @@ bool OpenCvVideo::startVideo(const QString &path)
         return false;
     }
 
+    m_currentVideoPath = path;
     b_videoPause = false;
     b_videoWorking = true;
     m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
@@ -234,27 +235,39 @@ void OpenCvVideo::setCurrentVideoTime(int current_msec)
     }
 }
 
-void OpenCvVideo::forceCurrentVideoTime(int current_msec)
+void OpenCvVideo::forceCurrentVideoTime(int target_msec)
 {
     if(!m_videoCapture.isOpened())
     {
         return;
     }
+
     if(this->isRunning())
     {
         b_videoPause = true;
-        m_frameMutex.lock();
-        if(m_frameQueue.count() > 0)
-        {
-            m_frameQueue.clear();
-            m_currentFrameCount = 0;
-        }
-        m_frameMutex.unlock();
     }
+    m_frameMutex.lock();
+    if(m_frameQueue.count() > 0)
+    {
+        m_frameQueue.clear();
+        m_currentFrameCount = 0;
+    }
+    m_frameMutex.unlock();
 
-    m_videoCapture.set(cv::CAP_PROP_POS_MSEC, current_msec);
+    m_videoCapture.set(cv::CAP_PROP_POS_MSEC, target_msec);
     m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     b_videoPause = false;
+
+    if(!this->isRunning())
+    {
+        b_videoWorking = true;
+        this->start();
+        qDebug() << "restart" << target_msec;
+    }
+    else
+    {
+        qDebug() << "set" << target_msec;
+    }
 }
 
 void OpenCvVideo::run()
@@ -281,6 +294,7 @@ void OpenCvVideo::run()
         if(!result)
         {
             b_videoWorking = false;
+            qDebug() << "read done";
             break;
         }
 
@@ -289,10 +303,12 @@ void OpenCvVideo::run()
         if(!result)
         {
             b_videoWorking = false;
+            qDebug() << "read done 2";
             break;
         }
         if(frame.empty())
         {
+            qDebug() << "empty";
             continue;
         }
 
