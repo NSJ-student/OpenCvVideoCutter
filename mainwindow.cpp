@@ -183,6 +183,7 @@ void MainWindow::on_btnSelectVideoSource_clicked()
             int second = (duration/1000)%60;
 
             ui->sliderVideoInput->setMaximum(duration);
+            ui->sliderVideoInput->setValue(0);
             ui->lblVideoTime->setText("00:00:00");
             ui->lblVideoTotal->setText(QString("%1:%2:%3")
                                .arg(hour).arg(minute).arg(second));

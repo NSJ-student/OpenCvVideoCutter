@@ -288,6 +288,11 @@ void OpenCvVideo::run()
             QThread::msleep(10);
             continue;
         }
+        if(m_frameQueue.count() > 100)
+        {
+            QThread::msleep(10);
+            continue;
+        }
 
         debug.restart();
         bool result = m_videoCapture.grab();
