@@ -6,6 +6,9 @@
 #include <QGraphicsPixmapItem>
 #include <QFileDialog>
 #include <QTimer>
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QMessageBox>
 #include "opencvvideo.h"
 #include "cameraprocessing.h"
 
@@ -23,11 +26,16 @@ public:
 
 public slots:
     void videoTimer();
+    void recordTimer();
     void videoEnd();
     void recordTime(int time);
 
 private slots:
+    void on_treeMediaList_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
     void on_btnSelectVideoSource_clicked();
+
+    void on_btnSelectVideoRemove_clicked();
 
     void on_btnSaveVideoPath_clicked();
 
@@ -43,12 +51,17 @@ private slots:
 
     void on_sliderVideoInput_sliderPressed();
 
+    void on_timeVideoStart_timeChanged(const QTime &time);
+
+    void on_timeVideoEnd_timeChanged(const QTime &time);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene m_scene;
     QGraphicsPixmapItem * m_pixmapItem;
     OpenCvVideo * m_videoCapture;
     QTimer m_videoTimer;
+    QTimer m_recordTimer;
     CameraProcessing * m_videoProsessing;
     int record_start_msec;
     int record_end_msec;

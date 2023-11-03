@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>533</height>
+    <width>992</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="font">
@@ -19,40 +19,7 @@
    <string>OpenCV Video Cutter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QFrame" name="frame_3">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Video Source</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineVideoSourcePath">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnSelectVideoSource">
-         <property name="text">
-          <string>OPEN</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
     <item>
      <widget class="QFrame" name="frameVideoWork">
       <property name="frameShape">
@@ -87,9 +54,16 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="cbShowVideo">
+           <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Show Video</string>
+             <string>Video Source</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineVideoSourcePath">
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -121,6 +95,12 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLabel" name="label_7">
             <property name="sizePolicy">
@@ -199,6 +179,16 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QCheckBox" name="cbShowVideo">
+            <property name="text">
+             <string>Show Video</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -227,10 +217,76 @@
            <item>
             <widget class="QSlider" name="sliderVideoInput">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QSlider::groove:horizontal
+{
+    border: 1px solid #bbb;
+    background: white;
+    height: 50px;
+    border-radius: 4px;
+}
+
+QSlider::sub-page:horizontal
+{
+    background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+        stop: 0 #66e, stop: 1 #bbf);
+    background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
+        stop: 0 #bbf, stop: 1 #55f);
+    border: 1px solid #777;
+    height: 50px;
+    border-radius: 4px;
+}
+
+QSlider::add-page:horizontal
+{
+    background: #fff;
+    border: 1px solid #777;
+    height: 50px;
+    border-radius: 4px;
+}
+
+QSlider::handle:horizontal
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 50px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    border-radius: 4px;
+}
+
+QSlider::handle:horizontal:hover
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #fff, stop:1 #ddd);
+    border: 1px solid #444;
+    border-radius: 4px;
+}
+
+QSlider::sub-page:horizontal:disabled
+{
+    background: #bbb;
+    border-color: #999;
+}
+
+QSlider::add-page:horizontal:disabled
+{
+    background: #eee;
+    border-color: #999;
+}
+
+QSlider::handle:horizontal:disabled
+{
+    background: #eee;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+}</string>
              </property>
              <property name="tracking">
               <bool>true</bool>
@@ -302,8 +358,8 @@
            <string>Recording</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_2">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_6">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -311,34 +367,17 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Record Path</string>
+              <string>Progress</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="3">
-            <widget class="QLineEdit" name="lineVideoOutPath">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
+           <item row="1" column="3">
+            <widget class="QTimeEdit" name="timeVideoEnd"/>
            </item>
-           <item row="0" column="4">
-            <widget class="QPushButton" name="btnSaveVideoPath">
-             <property name="text">
-              <string>SAVE</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Record Range</string>
+           <item row="2" column="1" colspan="4">
+            <widget class="QProgressBar" name="progRecord">
+             <property name="value">
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -358,8 +397,18 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QTimeEdit" name="timeVideoEnd"/>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Record Range</string>
+             </property>
+            </widget>
            </item>
            <item row="1" column="4">
             <widget class="QPushButton" name="btnRecord">
@@ -371,8 +420,22 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_6">
+           <item row="0" column="4">
+            <widget class="QPushButton" name="btnSaveVideoPath">
+             <property name="text">
+              <string>SAVE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="3">
+            <widget class="QLineEdit" name="lineVideoOutPath">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -380,14 +443,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Progress</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="4">
-            <widget class="QProgressBar" name="progRecord">
-             <property name="value">
-              <number>0</number>
+              <string>Record Path</string>
              </property>
             </widget>
            </item>
@@ -399,6 +455,94 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Video List</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QTreeWidget" name="treeMediaList">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <property name="rootIsDecorated">
+        <bool>false</bool>
+       </property>
+       <property name="itemsExpandable">
+        <bool>false</bool>
+       </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
+       <attribute name="headerVisible">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="headerStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>File Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Time</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_3">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="btnSelectVideoSource">
+          <property name="text">
+           <string>ADD</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSelectVideoRemove">
+          <property name="text">
+           <string>REMOVE</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources>

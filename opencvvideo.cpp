@@ -4,6 +4,7 @@ OpenCvVideo::OpenCvVideo(QObject *parent) :
     QThread(parent)
   , b_videoWorking(false)
   , b_videoPause(false)
+  , b_recordWorking(false)
   , m_currentFrameCount(0)
 {
 
@@ -16,6 +17,21 @@ OpenCvVideo::~OpenCvVideo()
         m_videoCapture.release();
     }
     cv::destroyAllWindows();
+}
+
+int OpenCvVideo::getVideoPlayTime(const QString &path)
+{
+    cv::VideoCapture tmpCapture = cv::VideoCapture(path.toStdString());
+    if(tmpCapture.isOpened())
+    {
+        int frame_count = tmpCapture.get(cv::CAP_PROP_FRAME_COUNT);
+        double fps = tmpCapture.get(cv::CAP_PROP_FPS);
+        tmpCapture.release();
+
+        return ((double)frame_count*1000/fps);
+    }
+
+    return 0;
 }
 
 bool OpenCvVideo::setVideo(const QString &path)
@@ -46,6 +62,34 @@ bool OpenCvVideo::setVideo(const QString &path)
     return true;
 }
 
+bool OpenCvVideo::startRecord()
+{
+    if(this->isRunning())
+    {
+        b_videoWorking = false;
+        if(!wait(1000))
+        {
+            emit drawMessage("prev video close fail");
+            return false;
+        }
+    }
+
+    m_frameMutex.lock();
+    if(m_frameQueue.count() > 0)
+    {
+        m_frameQueue.clear();
+        m_currentFrameCount = 0;
+    }
+    m_frameMutex.unlock();
+
+    b_videoPause = false;
+    b_videoWorking = true;
+    b_recordWorking = true;
+    m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
+    this->start();
+    return true;
+}
+
 bool OpenCvVideo::startVideo()
 {
     if(this->isRunning())
@@ -68,6 +112,7 @@ bool OpenCvVideo::startVideo()
 
     b_videoPause = false;
     b_videoWorking = true;
+    b_recordWorking = false;
     m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     this->start();
     return true;
@@ -108,6 +153,7 @@ bool OpenCvVideo::startVideo(const QString &path)
     m_currentVideoPath = path;
     b_videoPause = false;
     b_videoWorking = true;
+    b_recordWorking = false;
     m_currentFrameCount = m_videoCapture.get(cv::CAP_PROP_POS_FRAMES);
     this->start();
     return true;
@@ -288,7 +334,7 @@ void OpenCvVideo::run()
             QThread::msleep(10);
             continue;
         }
-        if(m_frameQueue.count() > 100)
+        if(!b_recordWorking && (m_frameQueue.count() > 100))
         {
             QThread::msleep(10);
             continue;

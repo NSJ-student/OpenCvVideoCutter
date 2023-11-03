@@ -22,6 +22,8 @@ public:
     OpenCvVideo(QObject *parent = Q_NULLPTR);
     ~OpenCvVideo();
 
+    static int getVideoPlayTime(const QString &path);
+
     bool isPaused()
     {
         if(isRunning() && b_videoPause)
@@ -33,6 +35,7 @@ public:
     }
 
     bool setVideo(const QString &path);
+    bool startRecord();
     bool startVideo();
     bool startVideo(const QString &path);
     void pauseVideo()
@@ -74,6 +77,7 @@ private:
     bool m_cameraAvailable;
     bool b_videoWorking;
     bool b_videoPause;
+    bool b_recordWorking;
     int  m_currentFrameCount;
     int  m_totalFrameCount;
     double  m_currentFps;
